@@ -1783,6 +1783,15 @@ class Sync {
                         console.log(`🔄 [Sync] Updating thinking state: isTaskComplete=${isTaskComplete}, isTaskStarted=${isTaskStarted}`);
                     }
 
+                    // Send desktop notification when agent completes a turn via lifecycle event
+                    if (isTaskComplete) {
+                        const completedSession = storage.getState().sessions[updateData.body.sid];
+                        if (completedSession) {
+                            console.log(`🔔 [Notification] Lifecycle turn-end for session: ${updateData.body.sid}, thinking was: ${completedSession.thinking}`);
+                            showAgentCompleteNotification(getSessionName(completedSession), updateData.body.sid);
+                        }
+                    }
+
                     // Update session
                     const session = storage.getState().sessions[updateData.body.sid];
                     if (session) {
@@ -2167,6 +2176,11 @@ class Sync {
             if (session) {
                 const wasThinking = session.thinking;
                 const isNowThinking = update.thinking ?? false;
+
+                // Log thinking state transitions for debugging
+                if (wasThinking !== isNowThinking) {
+                    console.log(`🔔 [Notification] Ephemeral thinking transition: ${wasThinking} → ${isNowThinking} for session: ${sessionId}`);
+                }
 
                 // Send desktop notification when agent finishes thinking (response complete)
                 if (wasThinking && !isNowThinking) {
