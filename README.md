@@ -41,6 +41,9 @@ Run From Source (Repo Checkout)
 # from repository root
 yarn cli --help
 yarn cli codex
+
+# macOS desktop client (Tauri)
+yarn mac
 ```
 
 <h3 align="center">

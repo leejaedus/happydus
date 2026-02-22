@@ -5,6 +5,10 @@
         "cli": "yarn workspace happy-coder cli",
         "release": "node ./scripts/release.cjs",
         "web": "yarn workspace happy-app web",
+        "mac": "yarn workspace happy-app tauri:dev",
+        "mac:build:dev": "yarn workspace happy-app tauri:build:dev",
+        "mac:build:preview": "yarn workspace happy-app tauri:build:preview",
+        "mac:build:production": "yarn workspace happy-app tauri:build:production",
         "postinstall": "node ./scripts/postinstall.cjs"
     },
     "workspaces": {
