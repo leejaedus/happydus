@@ -28,6 +28,8 @@ import { log } from '@/log';
 import { gitStatusSync } from './gitStatusSync';
 import { projectManager } from './projectManager';
 import { AsyncLock } from '@/utils/lock';
+import { getSessionName } from '@/utils/sessionUtils';
+import { showAgentCompleteNotification } from '@/utils/webNotification';
 import { voiceHooks } from '@/realtime/hooks/voiceHooks';
 import { Message } from './typesMessage';
 import { EncryptionCache } from './encryption/encryptionCache';
@@ -2163,11 +2165,19 @@ class Sync {
         for (const [sessionId, update] of updates) {
             const session = storage.getState().sessions[sessionId];
             if (session) {
+                const wasThinking = session.thinking;
+                const isNowThinking = update.thinking ?? false;
+
+                // Send desktop notification when agent finishes thinking (response complete)
+                if (wasThinking && !isNowThinking) {
+                    showAgentCompleteNotification(getSessionName(session), sessionId);
+                }
+
                 sessions.push({
                     ...session,
                     active: update.active,
                     activeAt: update.activeAt,
-                    thinking: update.thinking ?? false,
+                    thinking: isNowThinking,
                     thinkingAt: update.activeAt // Always use activeAt for consistency
                 });
             }
